@@ -108,7 +108,7 @@ const performLogin = (user, config, group) =>
  * @return {Promise<object>} - a promise that resolves an action to be dispatched
  *
 */
-const authenticate = (username, password, userPool, config, dispatch) =>
+const authenticate = (username, password, userPool, config = null, dispatch = null) =>
   new Promise((resolve, reject) => {
     const creds = new AuthenticationDetails({
       Username: username,
@@ -122,25 +122,45 @@ const authenticate = (username, password, userPool, config, dispatch) =>
 
     user.authenticateUser(creds, {
       onSuccess: () => {
-        dispatch(Action.authenticated(user));
-        resolve();
+        if (typeof dispatch === "function") {
+          dispatch(Action.authenticated(user));
+          resolve();
+        } else {
+          resolve(Action.authenticated(user));
+        }
       },
       onFailure: (error) => {
         if (error.code === 'UserNotConfirmedException') {
-          dispatch(Action.confirmationRequired(user));
-          resolve();
+          if (typeof dispatch === "function") {
+            dispatch(Action.confirmationRequired(user));
+            resolve();
+          } else {
+            resolve(Action.confirmationRequired(user));
+          }
         } else {
-          dispatch(Action.loginFailure(user, error.message));
-          reject(error);
+          if (typeof dispatch === "function") {
+            dispatch(Action.loginFailure(user, error.message));
+            reject(error);
+          } else {
+            reject(error);
+          }
         }
       },
       mfaRequired: () => {
-        dispatch(Action.mfaRequired(user));
-        resolve();
+        if (typeof dispatch === "function") {
+          dispatch(Action.mfaRequired(user));
+          resolve();
+        } else {
+          resolve(Action.mfaRequired(user));
+        }
       },
       newPasswordRequired: () => {
-        dispatch(Action.newPasswordRequired(user));
-        resolve();
+        if (typeof dispatch === "function") {
+          dispatch();
+          resolve();
+        } else {
+          resolve(Action.newPasswordRequired(user));
+        }
       },
     });
   });
