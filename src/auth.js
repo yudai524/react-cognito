@@ -142,7 +142,7 @@ const authenticate = (username, password, userPool, config = null, dispatch = nu
             dispatch(Action.loginFailure(user, error.message));
             reject(error);
           } else {
-            reject(error);
+            reject(Action.loginFailure(user, error.message));
           }
         }
       },
