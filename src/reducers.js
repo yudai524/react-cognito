@@ -1,5 +1,5 @@
-import { CognitoUserPool } from 'amazon-cognito-identity-js';
-import { CognitoState } from './states';
+import {CognitoUserPool} from 'amazon-cognito-identity-js';
+import {CognitoState} from './states';
 
 /* global AWS */
 
@@ -52,7 +52,7 @@ const addAttributes = (s, attributes) => {
  * reducer function to be passed to redux combineReducers
  * @param {object} state
  * @param {object} action
-*/
+ */
 
 export const cognito = (state = initial, action) => {
   switch (action.type) {
@@ -188,6 +188,11 @@ export const cognito = (state = initial, action) => {
         attributes: Object.assign({}, state.attributes, action.attributes),
         state: CognitoState.AUTHENTICATED,
       });
+
+    case 'FACEBOOK_LOGIN':
+      return Object.assign({}, state, {
+        state: CognitoState.LOGGED_IN,
+      }, action.payload);
 
     default:
       return state;
